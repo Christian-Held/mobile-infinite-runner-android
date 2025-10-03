@@ -1,1 +1,33 @@
-# Platzhalter, wird in Task 2 gefüllt
+{
+  email {$CADDY_EMAIL}
+  # Optional: global logging
+  # admin off
+}
+
+{$CADDY_DOMAIN} {
+  encode gzip zstd
+
+  @health path /health
+  reverse_proxy @health health:80
+
+  # Fallback bis API existiert
+  handle {
+    respond 404
+  }
+
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options "nosniff"
+    X-Frame-Options "DENY"
+    Referrer-Policy "no-referrer"
+  }
+
+  tls {
+    # HTTP-01 default; falls CGNAT → später DNS-01 umstellen
+  }
+
+  log {
+    output stdout
+    format json
+  }
+}
