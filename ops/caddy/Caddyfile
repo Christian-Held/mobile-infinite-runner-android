@@ -8,9 +8,12 @@
   encode gzip zstd
 
   @health path /health
-  reverse_proxy @health health:80
+  reverse_proxy @health api:8080
 
-  # Fallback bis API existiert
+  handle_path /api/* {
+    reverse_proxy api:8080
+  }
+
   handle {
     respond 404
   }

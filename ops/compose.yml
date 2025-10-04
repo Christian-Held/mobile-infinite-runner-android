@@ -17,13 +17,19 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
-      - health
+      - api
 
-  health:
-    image: nginx:alpine
-    restart: unless-stopped
-    volumes:
-      - ./health/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  api:
+    build:
+      context: ../server/api
+    environment:
+      - PORT=8080
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+    depends_on:
+      - db
+      - redis
 
   redis:
     image: redis:7-alpine
